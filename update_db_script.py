@@ -3,6 +3,7 @@ from wpybl.data import GamesCollection
 
 import duckdb
 import os
+import pandas as pd
 import wpybl.stats.batting as wpybl_batting
 import wpybl.stats.pitching as wpybl_pitching
 import wpybl.stats.teams as wpybl_teams
@@ -177,12 +178,87 @@ def set_pitching_leaders(conn: duckdb.DuckDBPyConnection) -> None:
     """)
 
 
+def set_league_batting(conn: duckdb.DuckDBPyConnection) -> None:
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS league_batting (
+            Team TEXT PRIMARY KEY,
+            G INT,
+            AB INT,
+            PA INT,
+            H INT,
+            _1B INT,
+            _2B INT,
+            _3B INT,
+            HR INT,
+            SO INT,
+            BB INT,
+            HBP INT,
+            RBI INT,
+            SF INT,
+            AVG REAL,
+            OBP REAL,
+            SLG REAL,
+            OPS REAL
+        )
+    """)
+
+    players_df = wpybl_teams.players().reset_index().set_index("Player")[["Team"]]
+    counting_stats_df = (
+        wpybl_batting.batting_counting_stats(GAMES)
+        .rename(
+            columns={
+                "games": "G",
+                "at_bats": "AB",
+                "plate_appearances": "PA",
+                "hits": "H",
+                "singles": "1B",
+                "doubles": "2B",
+                "triples": "3B",
+                "home_runs": "HR",
+                "strikeouts": "SO",
+                "bases_on_balls": "BB",
+                "hit_by_pitches": "HBP",
+                "rbi": "RBI",
+                "sacrifice_flies": "SF",
+            }
+        )
+        .drop(["G"], axis=1)
+    )
+    df = players_df.merge(counting_stats_df, left_index=True, right_index=True)
+    df = df.groupby("Team").agg({k: "sum" for k in df.columns if k != "Team"})
+
+    standings_df = wpybl_teams.standings()[["W", "L", "T"]]
+    standings_df["G"] = standings_df["W"] + standings_df["L"] + standings_df["T"]
+    standings_df = standings_df[["G"]]
+    df = standings_df.merge(df, left_index=True, right_index=True)
+
+    league = df.sum().to_frame().T
+    league["Team"] = "League"
+    league.set_index("Team", inplace=True)
+    df = pd.concat([df, league])
+
+    df["AVG"] = df["H"] / df["AB"]
+    df["OBP"] = (df["H"] + df["BB"] + df["HBP"]) / (
+        df["AB"] + df["BB"] + df["HBP"] + df["SF"]
+    )
+    df["SLG"] = (df["1B"] + 2 * df["2B"] + 3 * df["3B"] + 4 * df["HR"]) / df["AB"]
+    df["OPS"] = df["OBP"] + df["SLG"]
+
+    df.reset_index(inplace=True)
+
+    conn.execute("""
+        INSERT OR REPLACE INTO league_batting
+        SELECT * FROM df
+    """)
+
+
 if __name__ == "__main__":
     conn = duckdb.connect(database=TEMP_DB_FILE)
 
     set_standings(conn)
     set_batting_leaders(conn)
     set_pitching_leaders(conn)
+    set_league_batting(conn)
 
     conn.close()
 

@@ -3,7 +3,6 @@ function setupStandingsTable() {
         paging: false,
         info: false,
         layout: {
-            topStart: null,
             topEnd: null,
         },
         order: [[4, "desc"]],
@@ -35,9 +34,7 @@ function setupStandingsTable() {
         tr.addEventListener("click", () => {
             tr.classList.toggle("highlight");
         });
-    });
 
-    document.querySelectorAll("#standings tbody tr").forEach((tr) => {
         tr.querySelectorAll("td").entries().forEach(([index, td]) => {
             const thName = document.querySelectorAll("#standings thead th")[index].textContent;
 
@@ -64,6 +61,103 @@ function setupStandingsTable() {
     });
 }
 
+function setupLeagueBattingTable() {
+    let table = new DataTable("#league-batting", {
+        paging: false,
+        info: false,
+        layout: {
+            topEnd: null,
+        },
+    });
+
+    // add heading titles
+    document.querySelectorAll("#league-batting thead th").forEach((th) => {
+        switch (th.textContent.toLowerCase()) {
+            case "g":
+                th.title = "Games Played";
+                break;
+            case "ab":
+                th.title = "At Bats";
+                break;
+            case "pa":
+                th.title = "Plate Appearances";
+                break;
+            case "h":
+                th.title = "Hits";
+                break;
+            case "1b":
+                th.title = "Singles";
+                break;
+            case "2b":
+                th.title = "Doubles";
+                break;
+            case "3b":
+                th.title = "Triples";
+                break;
+            case "hr":
+                th.title = "Home Runs";
+                break;
+            case "so":
+                th.title = "Strikeouts";
+                break;
+            case "bb":
+                th.title = "Bases on Balls";
+                break;
+            case "hbp":
+                th.title = "Hit by Pitches";
+                break;
+            case "rbi":
+                th.title = "Runs Batted In";
+                break;
+            case "sf":
+                th.title = "Sacrifice Flies";
+                break;
+            case "avg":
+                th.title = "Batting Average";
+                break;
+            case "obp":
+                th.title = "On-Base Percentage";
+                break;
+            case "slg":
+                th.title = "Slugging Percentage";
+                break;
+            case "ops":
+                th.title = "On-base Plus Slugging";
+                break;
+        }
+    });
+
+    // format the data
+    document.querySelectorAll("#league-batting tbody tr").forEach((tr) => {
+        tr.addEventListener("click", () => {
+            tr.classList.toggle("highlight");
+        });
+
+        const team = tr.children[0].textContent;
+        if (team === "League") {
+            tr.classList.add("league");
+        }
+
+        tr.querySelectorAll("td").entries().forEach(([index, td]) => {
+            const thName = document.querySelectorAll("#league-batting thead th")[index].textContent;
+
+            if (!td.textContent.includes(".")) {
+                return;
+            }
+            if (!["AVG", "OBP", "SLG", "OPS"].includes(thName)) {
+                td.textContent = td.textContent.split(".")[0];
+            } else {
+                td.textContent = td.textContent.replace(/^0\./, ".");
+                const decimals = td.textContent.split(".")[1];
+                if (decimals.length < 3) {
+                    td.textContent += "0".repeat(3 - decimals.length);
+                }
+            }
+        });
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     setupStandingsTable();
+    setupLeagueBattingTable();
 });

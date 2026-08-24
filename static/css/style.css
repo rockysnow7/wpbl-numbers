@@ -51,6 +51,16 @@ tr.highlight:hover td {
     display: none;
 }
 
+tr.league {
+    border-top-color: #c8c8c8;
+    font-weight: bold;
+    font-style: italic;
+}
+
+tr.league td {
+    background-color: #e3e3e3;
+}
+
 div.table-container {
     width: 50%;
 }

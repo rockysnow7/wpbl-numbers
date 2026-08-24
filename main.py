@@ -18,8 +18,12 @@ def index():
     standings_df = db.get_standings()
     standings = {k: v.to_dict() for k, v in standings_df.T.items()}
 
+    league_batting_df = db.get_league_batting()
+    league_batting = {k: v.to_dict() for k, v in league_batting_df.T.items()}
+
     return {
         "standings": standings,
+        "league_batting": league_batting,
     }
 
 
