@@ -1,11 +1,29 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
+
+* {
+    font-family: "IBM Plex Serif", serif;
+}
+
+h1,
+h2 {
+    font-weight: 700;
+}
+
+p,
+td,
+th,
+input,
+label {
+    font-weight: 400;
+}
+
 body {
-    background-color: #f1ffef;
+    background-color: #fff4fd;
     font-family: serif;
 }
 
 main {
-    width: 50%;
-    margin: 0 auto;
+    margin-left: 20%;
 }
 
 h2 {
@@ -23,7 +41,11 @@ p {
 }
 
 p {
-    text-indent: 1em;
+    text-indent: 20px;
+}
+
+input[type="checkbox"] {
+    margin-left: 20px;
 }
 
 table {
@@ -33,6 +55,10 @@ table {
 
 td {
     width: 10px !important;
+}
+
+th {
+    background-color: #f3f3f3;
 }
 
 tr:hover td {
@@ -51,16 +77,19 @@ tr.highlight:hover td {
     display: none;
 }
 
-tr.league {
-    border-top-color: #c8c8c8;
-    font-weight: bold;
+tr.league td {
+    font-weight: 600;
     font-style: italic;
 }
 
 tr.league td {
-    background-color: #e3e3e3;
+    background-color: #f3f3f3;
 }
 
 div.table-container {
-    width: 50%;
+    width: 20%;
+}
+
+.space-above {
+    margin-top: 20px;
 }

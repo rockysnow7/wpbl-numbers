@@ -21,9 +21,13 @@ def index():
     league_batting_df = db.get_league_batting()
     league_batting = {k: v.to_dict() for k, v in league_batting_df.T.items()}
 
+    league_pitching_df = db.get_league_pitching()
+    league_pitching = {k: v.to_dict() for k, v in league_pitching_df.T.items()}
+
     return {
         "standings": standings,
         "league_batting": league_batting,
+        "league_pitching": league_pitching,
     }
 
 

@@ -73,7 +73,27 @@
         <h2>League Pitching</h2>
         <p><a href="/pitching-leaders">Pitching Leaders</a></p>
         <div class="table-container">
-            <p>todo</p>
+            <table id="league-pitching" class="cell-border compact order-column nowrap">
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        {% set key = league_pitching.keys() | first %}
+                        {% for key in league_pitching[key]: %}
+                        <th>{{key}}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team, row in league_pitching.items(): %}
+                    <tr>
+                        <td>{{team}}</td>
+                        {% for stat, value in row.items(): %}
+                        <td>{{value}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </main>
 </body>

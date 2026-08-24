@@ -62,7 +62,7 @@ function setupStandingsTable() {
 }
 
 function setupLeagueBattingTable() {
-    let table = new DataTable("#league-batting", {
+    new DataTable("#league-batting", {
         paging: false,
         info: false,
         layout: {
@@ -157,7 +157,88 @@ function setupLeagueBattingTable() {
     });
 }
 
+function setupLeaguePitchingTable() {
+    new DataTable("#league-pitching", {
+        paging: false,
+        info: false,
+        layout: {
+            topEnd: null,
+        },
+    });
+
+    // add heading titles
+    document.querySelectorAll("#league-pitching thead th").forEach((th) => {
+        switch (th.textContent.toLowerCase()) {
+            case "g":
+                th.title = "Games Played";
+                break;
+            case "ip":
+                th.title = "Innings Pitched";
+                break;
+            case "h":
+                th.title = "Hits Allowed";
+                break;
+            case "r":
+                th.title = "Runs Allowed";
+                break;
+            case "er":
+                th.title = "Earned Runs Allowed";
+                break;
+            case "bb":
+                th.title = "Bases on Balls";
+                break;
+            case "so":
+                th.title = "Strikeouts";
+                break;
+            case "era":
+                th.title = "Earned Run Average";
+                break;
+            case "whip":
+                th.title = "Walks Plus Hits per Inning Pitched";
+                break;
+            case "k/bb":
+                th.title = "Strikeout to Walk Ratio";
+                break;
+        }
+    });
+
+    // format the data
+    document.querySelectorAll("#league-pitching tbody tr").forEach((tr) => {
+        tr.addEventListener("click", () => {
+            tr.classList.toggle("highlight");
+        });
+
+        const team = tr.children[0].textContent;
+        if (team === "League") {
+            tr.classList.add("league");
+        }
+
+        tr.querySelectorAll("td").entries().forEach(([index, td]) => {
+            const thName = document.querySelectorAll("#league-pitching thead th")[index].textContent;
+
+            if (!td.textContent.includes(".")) {
+                return;
+            }
+            if (thName === "IP") {
+                // const decimals = td.textContent.split(".")[1];
+                // if (decimals.length < 1) {
+                //     td.textContent += "0";
+                // }
+            } else if (!["ERA", "WHIP", "K/BB"].includes(thName)) {
+                td.textContent = td.textContent.split(".")[0];
+            } else {
+                td.textContent = td.textContent.replace(/^0\./, ".");
+                const decimals = td.textContent.split(".")[1];
+                if (decimals.length < 2) {
+                    td.textContent += "0".repeat(2 - decimals.length);
+                }
+            }
+        });
+    });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     setupStandingsTable();
     setupLeagueBattingTable();
+    setupLeaguePitchingTable();
 });

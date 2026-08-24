@@ -169,3 +169,30 @@ class Database:
         df["OPS"] = df["OPS"].round(3)
 
         return df
+
+    def get_league_pitching(self) -> pd.DataFrame:
+        result = self.__execute("SELECT * FROM league_pitching")
+        result = result.fetchall()
+
+        df = pd.DataFrame(
+            result,
+            columns=[
+                "Team",
+                "G",
+                "IP",
+                "H",
+                "R",
+                "ER",
+                "BB",
+                "SO",
+                "ERA",
+                "WHIP",
+                "K/BB",
+            ],
+        ).set_index("Team")
+        df["IP"] = df["IP"].round(1)
+        df["ERA"] = df["ERA"].round(2)
+        df["WHIP"] = df["WHIP"].round(2)
+        df["K/BB"] = df["K/BB"].round(2)
+
+        return df
