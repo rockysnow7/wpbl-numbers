@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>WPBL Stats</title>
+
+    <link rel="stylesheet" href="static/css/style.css">
+
+    <link href="https://cdn.datatables.net/v/dt/dt-3.0.2/datatables.min.css" rel="stylesheet"
+        integrity="sha384-mr0ObFSzaij8F1fFA3BsXCL998+r9tYwkJmx/gydwbT8Mq8EeJwBlqWm5uFUrFbu" crossorigin="anonymous">
+    <script src="https://cdn.datatables.net/v/dt/dt-3.0.2/datatables.min.js"
+        integrity="sha384-S27Gmq+yiALyXvt4WgoOs+8UonZ/LMOqnCNC6xSj1vGgbHxMvcgkFYUHvkSfW5fo"
+        crossorigin="anonymous"></script>
+
+    <script src="static/js/index.js" defer></script>
+</head>
+
+<body>
+    <main>
+        <h1><a href="/">WPBL Stats</a></h1>
+
+        <h2>Standings</h2>
+        <div class="table-container">
+            <table id="standings" class="cell-border compact order-column nowrap">
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        {% set key = standings.keys() | first %}
+                        {% for key in standings[key]: %}
+                        <th>{{key}}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team, row in standings.items(): %}
+                    <tr>
+                        <td>{{team}}</td>
+                        {% for stat, value in row.items(): %}
+                        <td>{{value}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <h2>League Batting</h2>
+        <p><a href="/batting-leaders">Batting Leaders</a></p>
+        <div class="table-container">
+            <p>todo</p>
+        </div>
+
+        <h2>League Pitching</h2>
+        <p><a href="/pitching-leaders">Pitching Leaders</a></p>
+        <div class="table-container">
+            <p>todo</p>
+        </div>
+    </main>
+</body>
+
+</html>

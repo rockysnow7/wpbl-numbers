@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>WPBL Stats | Batting Leaders</title>
+
+    <link rel="stylesheet" href="static/css/style.css">
+
+    <link href="https://cdn.datatables.net/v/dt/dt-3.0.2/datatables.min.css" rel="stylesheet"
+        integrity="sha384-mr0ObFSzaij8F1fFA3BsXCL998+r9tYwkJmx/gydwbT8Mq8EeJwBlqWm5uFUrFbu" crossorigin="anonymous">
+    <script src="https://cdn.datatables.net/v/dt/dt-3.0.2/datatables.min.js"
+        integrity="sha384-S27Gmq+yiALyXvt4WgoOs+8UonZ/LMOqnCNC6xSj1vGgbHxMvcgkFYUHvkSfW5fo"
+        crossorigin="anonymous"></script>
+    <script>
+        const allRateStats = {{ all_rate_stats | tojson }};
+    </script>
+    <script src="static/js/batting-leaders.js" defer></script>
+</head>
+
+<body>
+    <main>
+        <h1><a href="/">WPBL Stats</a></h1>
+
+        <h2>Batting Leaders</h2>
+
+        <input type="checkbox" id="filter-qualified" checked>
+        <label for="filter-qualified">Filter qualified (≥ 3.1 PA per team game)</label>
+
+        <div class="table-container">
+            <table id="batting-stats" class="cell-border compact order-column nowrap">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        {% set key = stats.keys() | first %}
+                        {% for key in stats[key]: %}
+                        {% if key != 'qualified' %}
+                        <th>{{key}}</th>
+                        {% endif %}
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for name, row in stats.items(): %}
+                    <tr class="{% if row.get('qualified', False): %}qualified{% endif %}">
+                        <td>{{name}}</td>
+                        {% for stat, value in row.items(): %}
+                        {% if stat != 'qualified' %}
+                        <td>{{value}}</td>
+                        {% endif %}
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+
+</html>

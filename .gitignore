@@ -1,0 +1,4 @@
+__pycache__/
+.venv/
+.wpybl_data/
+db/
