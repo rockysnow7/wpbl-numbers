@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>WPBL Stats</title>
+    <title>WPBL Numbers</title>
 
     <link rel="stylesheet" href="static/css/style.css">
 
@@ -17,7 +17,7 @@
 
 <body>
     <main>
-        <h1><a href="/">WPBL Stats</a></h1>
+        <h1><a href="/">WPBL Numbers</a></h1>
 
         <h2>Standings</h2>
         <div class="table-container">
@@ -43,7 +43,8 @@
                 </tbody>
             </table>
         </div>
-        <p><a id="download-standings" download="standings.csv" onclick="downloadStandingsAsCSV()">Download as CSV</a>
+        <p><a id="download-standings" class="download-button" download="standings.csv"
+                onclick="downloadStandingsAsCSV()">Download as CSV</a>
         </p>
 
         <h2>League Batting</h2>
@@ -71,7 +72,8 @@
                 </tbody>
             </table>
         </div>
-        <p><a id="download-league-batting" download="league-batting.csv" onclick="downloadLeagueBattingAsCSV()">Download
+        <p><a id="download-league-batting" class="download-button" download="league-batting.csv"
+                onclick="downloadLeagueBattingAsCSV()">Download
                 as CSV</a>
         </p>
 
@@ -100,7 +102,7 @@
                 </tbody>
             </table>
         </div>
-        <p><a id="download-league-pitching" download="league-pitching.csv"
+        <p><a id="download-league-pitching" class="download-button" download="league-pitching.csv"
                 onclick="downloadLeaguePitchingAsCSV()">Download as CSV</a>
         </p>
     </main>
