@@ -1,3 +1,42 @@
+function areAnyRowsHighlighted(tableId) {
+    const rowsArray = Array.from(document.querySelectorAll(`#${tableId} tbody tr`));
+    const highlightedRows = rowsArray.filter(tr => tr.classList.contains("highlight"));
+    return highlightedRows.length > 0;
+}
+
+function getTableAsCSV(id) {
+    const headings = Array.from(document.querySelectorAll(`#${id} thead th`)).map(th => th.textContent);
+
+    let rowsArray = Array.from(document.querySelectorAll(`#${id} tbody tr`));
+    if (areAnyRowsHighlighted(id)) {
+        rowsArray = rowsArray.filter(tr => tr.classList.contains("highlight"));
+    }
+
+    const values = rowsArray.map(tr => Array.from(tr.querySelectorAll("td")).map(td => td.textContent));
+
+    const rows = [headings].concat(values);
+    const csv = rows.map(row => row.join(",")).join("\n");
+
+    return csv;
+}
+
+function updateDownloadButton(tableId) {
+    const downloadButton = document.getElementById(`download-${tableId}`);
+    if (areAnyRowsHighlighted(tableId)) {
+        downloadButton.textContent = "Download selected rows as CSV";
+    } else {
+        downloadButton.textContent = "Download as CSV";
+    }
+}
+
+function downloadStandingsAsCSV() {
+    const csv = getTableAsCSV("standings");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+
+    document.getElementById("download-standings").href = url;
+}
+
 function setupStandingsTable() {
     new DataTable("#standings", {
         paging: false,
@@ -33,6 +72,7 @@ function setupStandingsTable() {
     document.querySelectorAll("#standings tbody tr").forEach((tr) => {
         tr.addEventListener("click", () => {
             tr.classList.toggle("highlight");
+            updateDownloadButton("standings");
         });
 
         tr.querySelectorAll("td").entries().forEach(([index, td]) => {
@@ -59,6 +99,14 @@ function setupStandingsTable() {
             }
         });
     });
+}
+
+function downloadLeagueBattingAsCSV() {
+    const csv = getTableAsCSV("league-batting");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+
+    document.getElementById("download-league-batting").href = url;
 }
 
 function setupLeagueBattingTable() {
@@ -131,6 +179,7 @@ function setupLeagueBattingTable() {
     document.querySelectorAll("#league-batting tbody tr").forEach((tr) => {
         tr.addEventListener("click", () => {
             tr.classList.toggle("highlight");
+            updateDownloadButton("league-batting");
         });
 
         const team = tr.children[0].textContent;
@@ -155,6 +204,14 @@ function setupLeagueBattingTable() {
             }
         });
     });
+}
+
+function downloadLeaguePitchingAsCSV() {
+    const csv = getTableAsCSV("league-pitching");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+
+    document.getElementById("download-league-pitching").href = url;
 }
 
 function setupLeaguePitchingTable() {
@@ -206,6 +263,7 @@ function setupLeaguePitchingTable() {
     document.querySelectorAll("#league-pitching tbody tr").forEach((tr) => {
         tr.addEventListener("click", () => {
             tr.classList.toggle("highlight");
+            updateDownloadButton("league-pitching");
         });
 
         const team = tr.children[0].textContent;
@@ -220,10 +278,10 @@ function setupLeaguePitchingTable() {
                 return;
             }
             if (thName === "IP") {
-                // const decimals = td.textContent.split(".")[1];
-                // if (decimals.length < 1) {
-                //     td.textContent += "0";
-                // }
+                const decimals = td.textContent.split(".")[1];
+                if (decimals.length < 1) {
+                    td.textContent += "0";
+                }
             } else if (!["ERA", "WHIP", "K/BB"].includes(thName)) {
                 td.textContent = td.textContent.split(".")[0];
             } else {
