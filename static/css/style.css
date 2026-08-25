@@ -27,6 +27,7 @@ main {
 }
 
 h2 {
+    margin-top: 30px;
     margin-bottom: 0;
 }
 
@@ -133,4 +134,11 @@ div.table-container {
 
 .space-above {
     margin-top: 20px;
+}
+
+footer {
+    border-top: 1px solid #ccc;
+    margin-top: 50px;
+    margin-bottom: 0;
+    text-align: center;
 }
