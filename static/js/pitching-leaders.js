@@ -16,6 +16,21 @@ function numberEnding(number) {
     }
 }
 
+function areAnyRowsHighlighted() {
+    const rowsArray = Array.from(document.querySelectorAll("#pitching-stats tbody tr"));
+    const highlightedRows = rowsArray.filter(tr => tr.classList.contains("highlight"));
+    return highlightedRows.length > 0;
+}
+
+function updateDownloadButton() {
+    const downloadButton = document.getElementById("download");
+    if (areAnyRowsHighlighted()) {
+        downloadButton.textContent = "Download selected rows as CSV";
+    } else {
+        downloadButton.textContent = "Download as CSV";
+    }
+}
+
 let filteredRateStats = structuredClone(allRateStats);
 
 function filterNonQualified() {
@@ -41,6 +56,11 @@ function filterNonQualified() {
             tr.classList.remove("hidden");
         });
     }
+
+    // un-highlight any hidden rows
+    document.querySelectorAll("#pitching-stats tbody tr.hidden.highlight").forEach((tr) => {
+        tr.classList.remove("highlight");
+    });
 }
 
 function setPercentileColours() {
@@ -96,6 +116,35 @@ function setPercentileColours() {
     });
 }
 
+function getTableAsCSV() {
+    const headings = Array.from(document.querySelectorAll("#pitching-stats thead th")).map(th => th.textContent);
+
+    let rowsArray = Array.from(document.querySelectorAll("#pitching-stats tbody tr"));
+    const filterQualified = document.querySelector("#filter-qualified").checked;
+    const filterHighlighted = areAnyRowsHighlighted();
+    if (filterQualified) {
+        rowsArray = rowsArray.filter(tr => tr.classList.contains("qualified"));
+    }
+    if (filterHighlighted) {
+        rowsArray = rowsArray.filter(tr => tr.classList.contains("highlight"));
+    }
+
+    const values = rowsArray.map(tr => Array.from(tr.querySelectorAll("td")).map(td => td.textContent));
+
+    const rows = [headings].concat(values);
+    const csv = rows.map(row => row.join(",")).join("\n");
+
+    return csv;
+}
+
+function downloadTableAsCSV() {
+    const csv = getTableAsCSV();
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+
+    document.getElementById("download").href = url;
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     new DataTable("#pitching-stats", {
         paging: false,
@@ -148,12 +197,14 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelector("#filter-qualified").addEventListener("change", _ => {
         filterNonQualified();
         setPercentileColours();
+        updateDownloadButton();
     });
 
     // format the data
     document.querySelectorAll("#pitching-stats tbody tr").forEach((tr) => {
         tr.addEventListener("click", () => {
             tr.classList.toggle("highlight");
+            updateDownloadButton();
         });
     });
 
