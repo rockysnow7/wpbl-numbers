@@ -84,6 +84,7 @@ class Database:
                     "OBP",
                     "SLG",
                     "OPS",
+                    "wOBA",
                     "qualified",
                 ],
             )
@@ -100,6 +101,7 @@ class Database:
         df["OBP"] = df["OBP"].round(3)
         df["SLG"] = df["SLG"].round(3)
         df["OPS"] = df["OPS"].round(3)
+        df["wOBA"] = df["wOBA"].round(3)
 
         return df
 
@@ -161,12 +163,14 @@ class Database:
                 "OBP",
                 "SLG",
                 "OPS",
+                "wOBA",
             ],
         ).set_index("Team")
         df["AVG"] = df["AVG"].round(3)
         df["OBP"] = df["OBP"].round(3)
         df["SLG"] = df["SLG"].round(3)
         df["OPS"] = df["OPS"].round(3)
+        df["wOBA"] = df["wOBA"].round(3)
 
         return df
 

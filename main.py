@@ -56,6 +56,7 @@ def batting_leaders():
             "OBP",
             "SLG",
             "OPS",
+            "wOBA",
             "qualified",
         ]
     ]

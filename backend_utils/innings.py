@@ -1,4 +1,4 @@
-def __innings_pitched_fractional_to_decimal(innings_pitched: float) -> float:
+def innings_pitched_fractional_to_decimal(innings_pitched: float) -> float:
     """Converts a fractional innings pitched value to a decimal value (e.g., 3.2 to 3.66666...)."""
 
     innings_pitched_int = int(innings_pitched)
@@ -8,7 +8,7 @@ def __innings_pitched_fractional_to_decimal(innings_pitched: float) -> float:
     return ip
 
 
-def __innings_pitched_decimal_to_fractional(innings_pitched: float) -> float:
+def innings_pitched_decimal_to_fractional(innings_pitched: float) -> float:
     """Converts a decimal innings pitched value to a fractional value (e.g., 3.66666... to 3.2)."""
 
     innings_pitched_int = int(innings_pitched)

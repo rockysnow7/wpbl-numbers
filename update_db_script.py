@@ -1,9 +1,10 @@
-from db import DB_DIR, DATABASE_FILE
-from utils import (
-    __innings_pitched_decimal_to_fractional,
-    __innings_pitched_fractional_to_decimal,
+from backend_utils.innings import (
+    innings_pitched_decimal_to_fractional,
+    innings_pitched_fractional_to_decimal,
 )
+from db import DB_DIR, DATABASE_FILE
 from wpybl.data import GamesCollection
+from wpybl.stats.misc import woba_weights
 
 import duckdb
 import os
@@ -30,7 +31,7 @@ def set_standings(conn: duckdb.DuckDBPyConnection) -> None:
         )
     """)
 
-    df = wpybl_teams.standings().reset_index()[
+    df = wpybl_teams.standings().reset_index()[  # noqa: F841
         [
             "Team",
             "W",
@@ -68,6 +69,7 @@ def set_batting_leaders(conn: duckdb.DuckDBPyConnection) -> None:
             OBP REAL,
             SLG REAL,
             OPS REAL,
+            wOBA REAL,
             qualified BOOLEAN
         )
     """)
@@ -98,10 +100,11 @@ def set_batting_leaders(conn: duckdb.DuckDBPyConnection) -> None:
             "obp": "OBP",
             "slg": "SLG",
             "ops": "OPS",
+            "woba": "wOBA",
         }
     )
 
-    df = (
+    df = (  # noqa: F841
         players_df.merge(
             counting_stats_df,
             left_index=True,
@@ -162,7 +165,7 @@ def set_pitching_leaders(conn: duckdb.DuckDBPyConnection) -> None:
         }
     )
 
-    df = (
+    df = (  # noqa: F841
         players_df.merge(
             counting_stats_df,
             left_index=True,
@@ -202,7 +205,8 @@ def set_league_batting(conn: duckdb.DuckDBPyConnection) -> None:
             AVG REAL,
             OBP REAL,
             SLG REAL,
-            OPS REAL
+            OPS REAL,
+            wOBA REAL
         )
     """)
 
@@ -248,6 +252,21 @@ def set_league_batting(conn: duckdb.DuckDBPyConnection) -> None:
     df["SLG"] = (df["1B"] + 2 * df["2B"] + 3 * df["3B"] + 4 * df["HR"]) / df["AB"]
     df["OPS"] = df["OBP"] + df["SLG"]
 
+    weights = woba_weights(GAMES).reset_index()
+    weights = {k: v for k, v in weights.to_dict("tight")["data"]}
+    numerator = (
+        weights.get("walk", 0) * df["BB"]
+        + weights.get("hit_by_pitch", 0) * df["HBP"]
+        + weights.get("single", 0) * df["1B"]
+        + weights.get("double", 0) * df["2B"]
+        + weights.get("triple", 0) * df["3B"]
+        + weights.get("home_run", 0) * df["HR"]
+    )
+    denominator = df["AB"] + df["BB"] + df["HBP"] + df["SF"]
+    woba = numerator / denominator
+    print(woba)
+    df["wOBA"] = woba
+
     df.reset_index(inplace=True)
 
     conn.execute("""
@@ -290,11 +309,11 @@ def set_league_pitching(conn: duckdb.DuckDBPyConnection) -> None:
         .drop(["G"], axis=1)
     )
     counting_stats_df["IP"] = counting_stats_df["IP"].map(
-        __innings_pitched_fractional_to_decimal
+        innings_pitched_fractional_to_decimal
     )
     df = players_df.merge(counting_stats_df, left_index=True, right_index=True)
     df = df.groupby("Team").agg({k: "sum" for k in df.columns if k != "Team"})
-    df["IP"] = df["IP"].map(__innings_pitched_decimal_to_fractional)
+    df["IP"] = df["IP"].map(innings_pitched_decimal_to_fractional)
 
     standings_df = wpybl_teams.standings()[["W", "L", "T"]]
     standings_df["G"] = standings_df["W"] + standings_df["L"] + standings_df["T"]

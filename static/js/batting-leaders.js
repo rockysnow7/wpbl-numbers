@@ -69,6 +69,7 @@ function setPercentileColours() {
         "OBP": true,
         "SLG": true,
         "OPS": true,
+        "wOBA": true,
     }
 
     const goodColor = "#ff4b4b";
@@ -209,7 +210,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 th.title = "Slugging Percentage";
                 break;
             case "ops":
-                th.title = "On-base Plus Slugging";
+                th.title = "On-Base Plus Slugging";
+                break;
+            case "woba":
+                th.title = "Weighted On-Base Average";
                 break;
         }
     });

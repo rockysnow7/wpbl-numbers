@@ -193,7 +193,7 @@ function setupLeagueBattingTable() {
             if (!td.textContent.includes(".")) {
                 return;
             }
-            if (!["AVG", "OBP", "SLG", "OPS"].includes(thName)) {
+            if (!["AVG", "OBP", "SLG", "OPS", "wOBA"].includes(thName)) {
                 td.textContent = td.textContent.split(".")[0];
             } else {
                 td.textContent = td.textContent.replace(/^0\./, ".");
