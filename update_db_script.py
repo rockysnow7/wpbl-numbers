@@ -2,7 +2,6 @@ from backend_utils.innings import (
     innings_pitched_decimal_to_fractional,
     innings_pitched_fractional_to_decimal,
 )
-from db import DB_DIR, DATABASE_FILE
 from wpybl.data import GamesCollection
 
 import duckdb
@@ -16,6 +15,11 @@ import wpybl.stats.misc as wpybl_misc
 
 GAMES = GamesCollection.all()
 
+DB_DIR = "db"
+if not os.path.exists(DB_DIR):
+    os.mkdir(DB_DIR)
+
+DATABASE_FILE = f"{DB_DIR}/data.duckdb"
 TEMP_DB_FILE = f"{DB_DIR}/temp.duckdb"
 
 

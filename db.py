@@ -4,12 +4,15 @@ import duckdb
 import json
 import os
 import pandas as pd
+import subprocess
+
+
+def run_update_db_script():
+    print("Running update_db_script.py")
+    subprocess.run(["python", "update_db_script.py"], check=True)
 
 
 DB_DIR = "db"
-if not os.path.exists(DB_DIR):
-    os.mkdir(DB_DIR)
-
 DATABASE_FILE = f"{DB_DIR}/data.duckdb"
 
 
@@ -26,6 +29,9 @@ def _next_refresh_datetime() -> datetime:
 
 class Database:
     def __init__(self) -> None:
+        if not os.path.exists(DB_DIR):
+            run_update_db_script()
+
         self.__conn = duckdb.connect(database=DATABASE_FILE, read_only=True)
         self.__refresh_at = _next_refresh_datetime()
 
