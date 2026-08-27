@@ -328,9 +328,11 @@ def set_league_pitching(conn: duckdb.DuckDBPyConnection) -> None:
     league.set_index("Team", inplace=True)
     df = pd.concat([df, league])
 
-    df["ERA"] = df["H"] / df["ER"]
-    df["WHIP"] = (df["BB"] + df["H"] + df["SO"]) / (df["IP"] + df["BB"] + df["SO"])
-    df["K/BB"] = df["H"] / df["BB"]
+    df["ERA"] = 9 * df["ER"] / df["IP"].map(innings_pitched_fractional_to_decimal)
+    df["WHIP"] = (df["BB"] + df["H"]) / df["IP"].map(
+        innings_pitched_fractional_to_decimal
+    )
+    df["K/BB"] = df["SO"] / df["BB"]
 
     df.reset_index(inplace=True)
 

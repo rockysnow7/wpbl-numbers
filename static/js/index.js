@@ -285,7 +285,6 @@ function setupLeaguePitchingTable() {
             } else if (!["ERA", "WHIP", "K/BB"].includes(thName)) {
                 td.textContent = td.textContent.split(".")[0];
             } else {
-                td.textContent = td.textContent.replace(/^0\./, ".");
                 const decimals = td.textContent.split(".")[1];
                 if (decimals.length < 2) {
                     td.textContent += "0".repeat(2 - decimals.length);
