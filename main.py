@@ -1,11 +1,18 @@
+from apscheduler.schedulers.background import BackgroundScheduler
 from bottle import jinja2_view, route, run, static_file
 from db import Database
 
 import numpy as np
+import os
 import pandas as pd
+import subprocess
 
 
 db = Database()
+
+
+def run_update_db_script():
+    subprocess.run(["python", "update_db_script.py"], check=True)
 
 
 @route("/static/<filepath:path>")
@@ -115,4 +122,11 @@ def linear_weights():
 
 
 if __name__ == "__main__":
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(run_update_db_script, "cron", hour=0)
+    scheduler.start()
+
+    if not os.path.exists("db"):
+        run_update_db_script()
+
     run(host="localhost", port=8080, debug=True, reloader=True)
