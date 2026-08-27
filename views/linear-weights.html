@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>WPBL Numbers</title>
+
+    <link rel="stylesheet" href="static/css/style.css">
+
+    <link href="https://cdn.datatables.net/v/dt/dt-3.0.2/datatables.min.css" rel="stylesheet"
+        integrity="sha384-mr0ObFSzaij8F1fFA3BsXCL998+r9tYwkJmx/gydwbT8Mq8EeJwBlqWm5uFUrFbu" crossorigin="anonymous">
+    <script src="https://cdn.datatables.net/v/dt/dt-3.0.2/datatables.min.js"
+        integrity="sha384-S27Gmq+yiALyXvt4WgoOs+8UonZ/LMOqnCNC6xSj1vGgbHxMvcgkFYUHvkSfW5fo"
+        crossorigin="anonymous"></script>
+
+    <script src="static/js/linear-weights.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <h1><a href="/">WPBL Numbers</a></h1>
+
+        <ul>
+            <li><a href="/">Normal Stats</a></li>
+            <li class="current-page"><a href="/linear-weights">Linear Weights</a></li>
+        </ul>
+    </header>
+
+    <main>
+        <h2>Run-Expectancy Matrix</h2>
+        <div class="table-container">
+            <table id="re24" class="cell-border compact order-column nowrap">
+                <thead>
+                    <tr>
+                        <th>Bases</th>
+                        <th>0 Out</th>
+                        <th>1 Out</th>
+                        <th>2 Out</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bases in [
+                    "---",
+                    "--1",
+                    "-2-",
+                    "-21",
+                    "3--",
+                    "3-1",
+                    "32-",
+                    "321",
+                    ]: %}
+                    <tr>
+                        <td>{{ bases }}</td>
+                        {% for outs in range(3): %}
+                        <td>{{ re24[bases + "/" + outs | string] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p><a id="download-re24" class="download-button" download="run-expectancies.csv"
+                onclick="downloadRE24AsCSV()">Download
+                as CSV</a>
+        </p>
+
+        <h2>Run Values</h2>
+        <div class="table-container">
+            <table id="run-values" class="cell-border compact order-column nowrap">
+                <thead>
+                    <tr>
+                        <th>Event Type</th>
+                        {% set key = run_values.keys() | first %}
+                        {% for key in run_values[key]: %}
+                        <th>{{key}}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event_type, row in run_values.items(): %}
+                    <tr>
+                        <td>{{event_type}}</td>
+                        {% for stat, value in row.items(): %}
+                        <td>{{value}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p><a id="download-run-values" class="download-button" download="run-values.csv"
+                onclick="downloadRunValuesAsCSV()">Download
+                as CSV</a>
+        </p>
+
+        <h2>wOBA Weights</h2>
+        <div class="table-container">
+            <table id="woba-weights" class="cell-border compact order-column nowrap">
+                <thead>
+                    <tr>
+                        <th>Event Type</th>
+                        {% set key = woba_weights.keys() | first %}
+                        {% for key in woba_weights[key]: %}
+                        <th>{{key}}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event_type, row in woba_weights.items(): %}
+                    <tr>
+                        <td>{{event_type}}</td>
+                        {% for stat, value in row.items(): %}
+                        <td>{{value}}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p><a id="download-woba-weights" class="download-button" download="woba-weights.csv"
+                onclick="downloadWOBAWeightsAsCSV()">Download
+                as CSV</a>
+        </p>
+    </main>
+
+    <footer>
+        <p>Created by <a href="https://github.com/rockysnow7" target="_blank">finn</a> / Data updated every night at
+            midnight</p>
+    </footer>
+</body>
+
+</html>

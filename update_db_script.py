@@ -4,7 +4,6 @@ from backend_utils.innings import (
 )
 from db import DB_DIR, DATABASE_FILE
 from wpybl.data import GamesCollection
-from wpybl.stats.misc import woba_weights
 
 import duckdb
 import os
@@ -12,6 +11,7 @@ import pandas as pd
 import wpybl.stats.batting as wpybl_batting
 import wpybl.stats.pitching as wpybl_pitching
 import wpybl.stats.teams as wpybl_teams
+import wpybl.stats.misc as wpybl_misc
 
 
 GAMES = GamesCollection.all()
@@ -252,7 +252,7 @@ def set_league_batting(conn: duckdb.DuckDBPyConnection) -> None:
     df["SLG"] = (df["1B"] + 2 * df["2B"] + 3 * df["3B"] + 4 * df["HR"]) / df["AB"]
     df["OPS"] = df["OBP"] + df["SLG"]
 
-    weights = woba_weights(GAMES).reset_index()
+    weights = wpybl_misc.woba_weights(GAMES).reset_index()
     weights = {k: v for k, v in weights.to_dict("tight")["data"]}
     numerator = (
         weights.get("walk", 0) * df["BB"]
@@ -264,7 +264,6 @@ def set_league_batting(conn: duckdb.DuckDBPyConnection) -> None:
     )
     denominator = df["AB"] + df["BB"] + df["HBP"] + df["SF"]
     woba = numerator / denominator
-    print(woba)
     df["wOBA"] = woba
 
     df.reset_index(inplace=True)
@@ -337,6 +336,57 @@ def set_league_pitching(conn: duckdb.DuckDBPyConnection) -> None:
     """)
 
 
+def set_re24(conn: duckdb.DuckDBPyConnection) -> None:
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS re24 (
+            state TEXT PRIMARY KEY,
+            expected_runs REAL
+        )
+    """)
+
+    df = (
+        wpybl_misc.re24(GAMES)
+        .reset_index()
+        .rename(columns={"runs_remaining": "expected_runs"})
+    )
+    df["expected_runs"] = df["expected_runs"].round(2)
+
+    conn.execute("""
+        INSERT OR REPLACE INTO re24
+        SELECT * FROM df
+    """)
+
+
+def set_run_values(conn: duckdb.DuckDBPyConnection) -> None:
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS run_values (
+            event_type TEXT PRIMARY KEY,
+            run_value REAL
+        )
+    """)
+
+    df = wpybl_misc.run_values(GAMES).reset_index()
+    conn.execute("""
+        INSERT OR REPLACE INTO run_values
+        SELECT * FROM df
+    """)
+
+
+def set_woba_weights(conn: duckdb.DuckDBPyConnection) -> None:
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS woba_weights (
+            event_type TEXT PRIMARY KEY,
+            weight REAL
+        )
+    """)
+
+    df = wpybl_misc.woba_weights(GAMES).reset_index()
+    conn.execute("""
+        INSERT OR REPLACE INTO woba_weights
+        SELECT * FROM df
+    """)
+
+
 if __name__ == "__main__":
     conn = duckdb.connect(database=TEMP_DB_FILE)
 
@@ -345,6 +395,9 @@ if __name__ == "__main__":
     set_pitching_leaders(conn)
     set_league_batting(conn)
     set_league_pitching(conn)
+    set_re24(conn)
+    set_run_values(conn)
+    set_woba_weights(conn)
 
     conn.close()
 

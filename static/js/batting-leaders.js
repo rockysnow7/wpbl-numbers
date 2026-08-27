@@ -36,11 +36,8 @@ let filteredRateStats = structuredClone(allRateStats);
 function filterNonQualified() {
     const filterQualifiedChecked = document.querySelector("#filter-qualified").checked;
 
-    filteredRateStats = structuredClone(allRateStats);
     if (filterQualifiedChecked) {
-        for (const [key, arr] of Object.entries(filteredRateStats)) {
-            filteredRateStats[key] = arr.filter((x) => x.qualified).map((x) => x.value);
-        }
+        filteredRateStats = structuredClone(allRateStats.qualified);
 
         document.querySelectorAll("#batting-stats tbody tr").forEach((tr) => {
             if (!tr.classList.contains("qualified")) {
@@ -48,9 +45,7 @@ function filterNonQualified() {
             }
         });
     } else {
-        for (const [key, arr] of Object.entries(allRateStats)) {
-            filteredRateStats[key] = arr.map((x) => x.value);
-        }
+        filteredRateStats = structuredClone(allRateStats.all);
 
         document.querySelectorAll("#batting-stats tbody tr").forEach((tr) => {
             tr.classList.remove("hidden");
@@ -84,7 +79,7 @@ function setPercentileColours() {
             }
 
             const thName = document.querySelectorAll("#batting-stats thead th")[index].textContent;
-            if (!allRateStats[thName]) {
+            if (!allRateStats.all[thName]) {
                 return;
             }
 

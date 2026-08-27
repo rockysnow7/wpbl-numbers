@@ -200,3 +200,48 @@ class Database:
         df["K/BB"] = df["K/BB"].round(2)
 
         return df
+
+    def get_re24(self) -> pd.DataFrame:
+        result = self.__execute("SELECT * FROM re24")
+        result = result.fetchall()
+
+        df = pd.DataFrame(
+            result,
+            columns=[
+                "state",
+                "expected_runs",
+            ],
+        ).set_index("state")
+        df["expected_runs"] = df["expected_runs"].round(2)
+
+        return df
+
+    def get_run_values(self) -> pd.DataFrame:
+        result = self.__execute("SELECT * FROM run_values")
+        result = result.fetchall()
+
+        df = pd.DataFrame(
+            result,
+            columns=[
+                "event_type",
+                "run_value",
+            ],
+        ).set_index("event_type")
+        df["run_value"] = df["run_value"].round(3)
+
+        return df
+
+    def get_woba_weights(self) -> pd.DataFrame:
+        result = self.__execute("SELECT * FROM woba_weights")
+        result = result.fetchall()
+
+        df = pd.DataFrame(
+            result,
+            columns=[
+                "event_type",
+                "weight",
+            ],
+        ).set_index("event_type")
+        df["weight"] = df["weight"].round(3)
+
+        return df
