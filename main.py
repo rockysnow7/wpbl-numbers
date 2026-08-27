@@ -118,7 +118,7 @@ def linear_weights():
 
 if __name__ == "__main__":
     scheduler = BackgroundScheduler()
-    scheduler.add_job(run_update_db_script, "cron", hour=16, minute=7)
+    scheduler.add_job(run_update_db_script, "cron", hour=0)
     scheduler.start()
 
     port = int(os.environ.get("PORT", "8080"))
