@@ -2,6 +2,7 @@ from backend_utils.innings import (
     innings_pitched_decimal_to_fractional,
     innings_pitched_fractional_to_decimal,
 )
+from wpybl.cache import clear_cache
 from wpybl.data import GamesCollection
 
 import duckdb
@@ -13,6 +14,7 @@ import wpybl.stats.teams as wpybl_teams
 import wpybl.stats.misc as wpybl_misc
 
 
+clear_cache()
 GAMES = GamesCollection.all()
 
 DB_DIR = "db"
